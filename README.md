@@ -116,3 +116,15 @@ To specify a different record type:
 
 python main.py dns example.com --type MX
 
+### HTTP Request
+
+To perform an HTTP GET request:
+python main.py http https://api.github.com
+
+
+To specify a different HTTP method:
+
+python main.py http https://api.github.com --method POST
+
+
+Note: For methods other than GET, you might need to provide headers and data, which we'll implement in future updates.
