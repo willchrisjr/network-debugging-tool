@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Network Debugging Tool is a comprehensive command-line utility that combines DNS server, HTTP server, and Shell functionalities to provide a robust set of network diagnostic and testing capabilities. This tool is designed for network administrators, developers, and IT professionals who need a versatile, all-in-one solution for network troubleshooting and analysis.
+The Network Debugging Tool is a comprehensive command-line utility that combines my previous projects domains using a DNS server, HTTP server, and Shell functionalities to provide a robust set of network diagnostic and testing capabilities. This tool is designed for network administrators, developers, and IT professionals who need a versatile, all-in-one solution for network troubleshooting and analysis.
 
 ## Features
 
