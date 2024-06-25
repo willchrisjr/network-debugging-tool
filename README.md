@@ -128,3 +128,26 @@ python main.py http https://api.github.com --method POST
 
 
 Note: For methods other than GET, you might need to provide headers and data, which we'll implement in future updates.
+
+
+### Ping
+
+To ping a host:
+python main.py ping google.com
+
+
+To specify the number of ping requests:
+
+python main.py ping google.com --count 8
+
+
+### Traceroute
+
+To perform a traceroute to a host:
+
+python main.py traceroute google.com
+
+
+Note: The traceroute command might require administrative privileges on some systems.
+
+
