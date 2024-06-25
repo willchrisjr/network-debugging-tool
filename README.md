@@ -222,4 +222,3 @@ python -m unittest discover tests
 
 
 This will discover and run all the tests in the `tests` directory.
-Finally, let's create a script to run all tests:
