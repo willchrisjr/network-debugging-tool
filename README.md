@@ -151,3 +151,75 @@ python main.py traceroute google.com
 Note: The traceroute command might require administrative privileges on some systems.
 
 
+### HTTP Request
+
+To perform an HTTP GET request:
+python main.py http https://api.github.com
+
+
+To perform a POST request with JSON data:
+
+python main.py http https://httpbin.org/post --method POST --json '{"key": "value"}'
+
+
+To include custom headers:
+
+python main.py http https://api.github.com --headers '{"Authorization": "token YOUR_TOKEN"}'
+
+
+To send form data:
+
+python main.py http https://httpbin.org/post --method POST --data 'key1=value1&key2=value2'
+
+
+## Usage
+
+The Network Debugging Tool provides a user-friendly command-line interface for various network diagnostics tasks.
+
+### General Help
+
+To see all available commands and general usage information:
+python main.py -h
+
+
+### Command-Specific Help
+
+To get help for a specific command, use the `-h` option after the command:
+
+python main.py dns -h
+python main.py http -h
+python main.py ping -h
+python main.py traceroute -h
+
+
+### Examples
+
+1. DNS Lookup:
+python main.py dns example.com
+python main.py dns example.com --type MX
+
+
+2. HTTP Request:
+python main.py http https://api.github.com
+python main.py http https://httpbin.org/post --method POST --json '{"key": "value"}'
+
+
+3. Ping:
+python main.py ping google.com
+python main.py ping google.com --count 8
+
+
+4. Traceroute:
+python main.py traceroute google.com
+
+
+For more detailed information on each command, please refer to the command-specific help.
+
+## Running Tests
+
+To run the unit tests for this project, use the following command from the project root directory:
+python -m unittest discover tests
+
+
+This will discover and run all the tests in the `tests` directory.
+Finally, let's create a script to run all tests:
