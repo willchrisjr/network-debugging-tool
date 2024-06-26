@@ -1,0 +1,2 @@
+[console_scripts]
+network-debugging-tool = cli.cli_handler:main

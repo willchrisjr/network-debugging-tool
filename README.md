@@ -222,3 +222,45 @@ python -m unittest discover tests
 
 
 This will discover and run all the tests in the `tests` directory.
+
+## New Features
+
+### Logging System
+The tool now includes a comprehensive logging system for debugging and auditing purposes. Logs are stored in the `logs` directory.
+
+### IPv6 Support
+All relevant functions now support IPv6, including DNS lookups, ping, and traceroute.
+
+### Scripting and Automation
+You can now run a series of network tests using a YAML script file. Here's an example of a script file:
+
+```yaml
+tasks:
+  - type: dns
+    domain: example.com
+    record_type: A
+  - type: http
+    url: https://api.github.com
+    method: GET
+  - type: ping
+    host: google.com
+    count: 4
+  - type: traceroute
+    host: cloudflare.com
+Advanced Network Diagnostics
+The tool now includes port scanning and SSL certificate validation capabilities.
+
+Usage
+Running a Script
+python main.py script path/to/your/script.yaml
+Port Scanning
+python main.py portscan example.com --ports 80,443,8080
+SSL Certificate Validation
+python main.py sslcert example.com
+Installation
+Make sure to install the new dependencies:
+
+pip install -r requirements.txt
+For more detailed information on each command, please refer to the command-specific help:
+
+python main.py <command> -h

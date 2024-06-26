@@ -3,6 +3,7 @@ import json
 from dns_module.dns_functions import dns_lookup
 from http_module.http_functions import http_request
 from network_module.network_functions import ping, traceroute
+from logging_module.logger import logger
 
 class NetworkDebuggingTool:
     def __init__(self):
@@ -59,24 +60,32 @@ Examples:
     def run(self, args=None):
         args = self.parser.parse_args(args)
 
+        logger.info(f"Running command: {args.command}")
+
         if args.command == "dns":
+            logger.debug(f"DNS lookup for {args.domain} with type {args.type}")
             result = dns_lookup(args.domain, args.type)
             self.print_result(result)
         elif args.command == "http":
+            logger.debug(f"HTTP request to {args.url} with method {args.method}")
             headers = json.loads(args.headers) if args.headers else None
             json_data = json.loads(args.json) if args.json else None
             result = http_request(args.url, method=args.method, headers=headers, data=args.data, json_data=json_data)
             self.print_result(result)
         elif args.command == "ping":
+            logger.debug(f"Pinging {args.host} with count {args.count}")
             result = ping(args.host, args.count)
             self.print_result(result)
         elif args.command == "traceroute":
+            logger.debug(f"Traceroute to {args.host}")
             result = traceroute(args.host)
             self.print_result(result)
         else:
+            logger.warning("No valid command provided")
             self.parser.print_help()
 
     def print_result(self, result):
+        logger.debug(f"Printing result: {result}")
         if isinstance(result, dict):
             print(json.dumps(result, indent=2))
         elif isinstance(result, list):
