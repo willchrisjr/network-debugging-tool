@@ -264,3 +264,61 @@ pip install -r requirements.txt
 For more detailed information on each command, please refer to the command-specific help:
 
 python main.py <command> -h
+
+
+### Result Comparison
+You can now compare results from two different runs:
+python main.py compare result1.json result2.json
+
+
+### Advanced Network Diagnostics
+The tool now includes a check for open SMTP relays:
+
+python main.py smtprelay example.com
+
+
+## Running Tests
+
+To run all tests:
+
+python -m unittest discover tests
+
+
+For more detailed information on each command, please refer to the command-specific help:
+
+python main.py <command> -h
+
+## Graphical User Interface
+
+The Network Debugging Tool now includes a simple graphical user interface. To launch the GUI version of the tool, use the following command:
+python main.py --gui
+
+
+The GUI provides easy-to-use interfaces for DNS lookup, HTTP requests, ping, and traceroute operations. Results are displayed in a scrollable text area at the bottom of the window.
+Update requirements.txt to include Tkinter (if not already included in your Python installation):
+dnspython==2.3.0
+requests==2.31.0
+pyyaml==6.0
+pyOpenSSL==23.1.1
+tk==0.1.0
+
+## CLI Dashboard
+
+The Network Debugging Tool now includes an interactive CLI dashboard. To launch the dashboard version of the tool, use the following command:
+python main.py --dashboard
+
+
+The CLI dashboard provides a menu of available commands and displays recent results. It offers a more interactive and user-friendly interface while maintaining the benefits of a command-line tool.
+
+To use the dashboard:
+1. Enter commands as you would in the regular CLI (e.g., "dns example.com")
+2. Recent results will be displayed in the dashboard
+3. Type 'quit' to exit the dashboard
+
+Update requirements.txt to include the new dependency:
+
+dnspython==2.3.0
+requests==2.31.0
+pyyaml==6.0
+pyOpenSSL==23.1.1
+rich==10.12.0
