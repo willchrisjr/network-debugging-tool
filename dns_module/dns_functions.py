@@ -1,6 +1,8 @@
 import dns.resolver
 from logging_module.logger import logger
+from utils.rate_limiter import RateLimiter
 
+@RateLimiter(max_calls=50, time_frame=60)  # Limit to 50 DNS lookups per minute
 def dns_lookup(domain, record_type='A'):
     logger.info(f"Performing DNS lookup for {domain} with record type {record_type}")
     try:

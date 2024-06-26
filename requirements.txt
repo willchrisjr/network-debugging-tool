@@ -1,4 +1,6 @@
-dnspython==2.3.0
-requests==2.31.0
-pyyaml==6.0
-pyOpenSSL==23.1.1
+dnspython>=2.3.0,<3.0.0
+requests>=2.31.0,<3.0.0
+pyyaml>=6.0,<7.0
+pyOpenSSL
+rich>=10.12.0,<11.0.0
+cryptography

@@ -1,0 +1,33 @@
+2024-06-26 05:08:49,233 - NetworkDebuggingTool - INFO - Scanning ports for example.com: [80, 443, 8080]
+2024-06-26 05:08:49,242 - NetworkDebuggingTool - INFO - Validating SSL certificate for example.com:443
+2024-06-26 05:08:49,265 - NetworkDebuggingTool - INFO - Running command: dns
+2024-06-26 05:08:49,282 - NetworkDebuggingTool - INFO - Performing DNS lookup for example.com with record type A
+2024-06-26 05:08:49,346 - NetworkDebuggingTool - INFO - Running command: http
+2024-06-26 05:08:49,346 - NetworkDebuggingTool - INFO - Performing HTTP GET request to https://api.example.com
+2024-06-26 05:08:49,421 - NetworkDebuggingTool - ERROR - HTTP request failed: HTTPSConnectionPool(host='api.example.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x1049a7d90>: Failed to resolve 'api.example.com' ([Errno 8] nodename nor servname provided, or not known)"))
+2024-06-26 05:08:49,428 - NetworkDebuggingTool - INFO - Running command: ping
+2024-06-26 05:08:49,429 - NetworkDebuggingTool - INFO - Pinging example.com with count 4
+2024-06-26 05:08:52,486 - NetworkDebuggingTool - INFO - Running command: traceroute
+2024-06-26 05:08:52,487 - NetworkDebuggingTool - INFO - Performing traceroute to example.com
+2024-06-26 05:09:04,410 - NetworkDebuggingTool - INFO - Performing DNS lookup for example.com with record type AAAA
+2024-06-26 05:09:04,410 - NetworkDebuggingTool - WARNING - No AAAA record found for example.com
+2024-06-26 05:09:04,411 - NetworkDebuggingTool - INFO - Performing DNS lookup for nonexistent.example.com with record type A
+2024-06-26 05:09:04,411 - NetworkDebuggingTool - WARNING - Domain nonexistent.example.com does not exist
+2024-06-26 05:09:04,412 - NetworkDebuggingTool - INFO - Performing DNS lookup for example.com with record type A
+2024-06-26 05:09:04,421 - NetworkDebuggingTool - INFO - Performing HTTP GET request to https://api.example.com
+2024-06-26 05:09:04,422 - NetworkDebuggingTool - ERROR - HTTP request failed: An error occurred
+2024-06-26 05:09:04,424 - NetworkDebuggingTool - INFO - Performing HTTP GET request to https://api.example.com
+2024-06-26 05:09:04,427 - NetworkDebuggingTool - INFO - Performing DNS lookup for example.com with record type AAAA
+2024-06-26 05:09:04,428 - NetworkDebuggingTool - INFO - Pinging 2001:db8::1 with count 4
+2024-06-26 05:09:04,430 - NetworkDebuggingTool - INFO - Performing traceroute to 2001:db8::1
+2024-06-26 05:09:04,434 - NetworkDebuggingTool - INFO - Pinging nonexistent.example.com with count 4
+2024-06-26 05:09:04,435 - NetworkDebuggingTool - ERROR - Ping failed: Command 'ping' returned non-zero exit status 1.
+2024-06-26 05:09:04,436 - NetworkDebuggingTool - INFO - Pinging example.com with count 4
+2024-06-26 05:09:04,439 - NetworkDebuggingTool - INFO - Performing traceroute to nonexistent.example.com
+2024-06-26 05:09:04,439 - NetworkDebuggingTool - ERROR - Traceroute failed: Command 'traceroute' returned non-zero exit status 1.
+2024-06-26 05:09:04,446 - NetworkDebuggingTool - INFO - Performing traceroute to example.com
+2024-06-26 05:09:04,453 - NetworkDebuggingTool - INFO - Running script from file: dummy_script.yaml
+2024-06-26 05:09:04,454 - NetworkDebuggingTool - INFO - Performing DNS lookup for example.com with record type A
+2024-06-26 05:09:04,463 - NetworkDebuggingTool - INFO - Performing HTTP GET request to https://api.github.com
+2024-06-26 05:09:04,662 - NetworkDebuggingTool - INFO - Pinging google.com with count 4
+2024-06-26 05:09:07,728 - NetworkDebuggingTool - INFO - Performing traceroute to cloudflare.com

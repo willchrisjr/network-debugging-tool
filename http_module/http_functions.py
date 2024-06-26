@@ -1,27 +1,28 @@
 import requests
 import json
+from logging_module.logger import logger
+from utils.rate_limiter import RateLimiter
 
+@RateLimiter(max_calls=30, time_frame=60)  # Limit to 30 HTTP requests per minute
 def http_request(url, method='GET', headers=None, data=None, json_data=None):
+    logger.info(f"Performing HTTP {method} request to {url}")
     try:
-        # Convert data to JSON if it's a dictionary
-        if isinstance(data, dict):
-            data = json.dumps(data)
-            headers = headers or {}
-            headers['Content-Type'] = 'application/json'
-
-        response = requests.request(method, url, headers=headers, data=data, json=json_data)
+        response = requests.request(method, url, headers=headers, data=data, json=json_data, timeout=10)
+        response.raise_for_status()
         
-        # Try to parse JSON response
         try:
             content = response.json()
-            content = json.dumps(content, indent=2)  # Pretty print JSON
+            content = json.dumps(content, indent=2)
         except json.JSONDecodeError:
-            content = response.text[:500]  # First 500 characters if not JSON
+            content = response.text[:500]
 
-        return {
+        result = {
             'status_code': response.status_code,
             'headers': dict(response.headers),
             'content': content
         }
+        logger.debug(f"HTTP request result: {result}")
+        return result
     except requests.RequestException as e:
-        return f"Error: {str(e)}"
+        logger.error(f"HTTP request failed: {str(e)}")
+        return f"Error: HTTP request failed: {str(e)}"

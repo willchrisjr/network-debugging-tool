@@ -2,90 +2,144 @@ import argparse
 import json
 from dns_module.dns_functions import dns_lookup
 from http_module.http_functions import http_request
-from network_module.network_functions import ping, traceroute
+from network_module.network_functions import ping, traceroute, port_scan, validate_ssl_cert, check_smtp_relay
 from logging_module.logger import logger
+from utils.input_validation import validate_domain, validate_ip, validate_url, sanitize_input
+from utils.rate_limiter import RateLimiter
+from utils.secure_config import SecureConfig
 
 class NetworkDebuggingTool:
     def __init__(self):
         self.parser = self.create_parser()
+        self.secure_config = SecureConfig()
 
     def create_parser(self):
-        parser = argparse.ArgumentParser(
-            description="Network Debugging Tool",
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            epilog="""
-Examples:
-  DNS lookup:
-    %(prog)s dns example.com
-    %(prog)s dns example.com --type MX
-
-  HTTP request:
-    %(prog)s http https://api.github.com
-    %(prog)s http https://httpbin.org/post --method POST --json '{"key": "value"}'
-
-  Ping:
-    %(prog)s ping google.com
-    %(prog)s ping google.com --count 8
-
-  Traceroute:
-    %(prog)s traceroute google.com
-            """
-        )
+        parser = argparse.ArgumentParser(description="Network Debugging Tool")
         subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-        # DNS lookup command
+        # DNS command
         dns_parser = subparsers.add_parser("dns", help="Perform DNS lookup")
-        dns_parser.add_argument("domain", help="Domain name to lookup")
-        dns_parser.add_argument("--type", default="A", help="DNS record type (default: A)")
+        dns_parser.add_argument("domain", help="Domain to lookup")
+        dns_parser.add_argument("--type", default="A", help="DNS record type")
 
-        # HTTP request command
-        http_parser = subparsers.add_parser("http", help="Perform HTTP request")
+        # HTTP command
+        http_parser = subparsers.add_parser("http", help="Send HTTP request")
         http_parser.add_argument("url", help="URL to send request to")
-        http_parser.add_argument("--method", default="GET", help="HTTP method (default: GET)")
-        http_parser.add_argument("--headers", help="HTTP headers in JSON format")
+        http_parser.add_argument("--method", default="GET", help="HTTP method")
+        http_parser.add_argument("--headers", help="HTTP headers (JSON format)")
         http_parser.add_argument("--data", help="Request body data")
-        http_parser.add_argument("--json", help="JSON data to send in the request body")
+        http_parser.add_argument("--json", help="JSON data to send (JSON format)")
 
         # Ping command
         ping_parser = subparsers.add_parser("ping", help="Ping a host")
         ping_parser.add_argument("host", help="Host to ping")
-        ping_parser.add_argument("--count", type=int, default=4, help="Number of ping requests to send (default: 4)")
+        ping_parser.add_argument("--count", type=int, default=4, help="Number of ping requests")
 
         # Traceroute command
-        traceroute_parser = subparsers.add_parser("traceroute", help="Perform traceroute to a host")
+        traceroute_parser = subparsers.add_parser("traceroute", help="Perform traceroute")
         traceroute_parser.add_argument("host", help="Host to traceroute")
+
+        # Port scan command
+        portscan_parser = subparsers.add_parser("portscan", help="Scan ports on a host")
+        portscan_parser.add_argument("host", help="Host to scan")
+        portscan_parser.add_argument("--ports", default="1-1024", help="Port range to scan (e.g., '1-1024' or '80,443,8080')")
+
+        # SSL certificate validation command
+        sslcert_parser = subparsers.add_parser("sslcert", help="Validate SSL certificate")
+        sslcert_parser.add_argument("hostname", help="Hostname to validate")
+        sslcert_parser.add_argument("--port", type=int, default=443, help="Port to use")
+
+        # SMTP relay check command
+        smtprelay_parser = subparsers.add_parser("smtprelay", help="Check for open SMTP relay")
+        smtprelay_parser.add_argument("host", help="Host to check")
+        smtprelay_parser.add_argument("--port", type=int, default=25, help="Port to use")
 
         return parser
 
+    @RateLimiter(max_calls=100, time_frame=60)  # Limit to 100 calls per minute
     def run(self, args=None):
         args = self.parser.parse_args(args)
-
         logger.info(f"Running command: {args.command}")
 
-        if args.command == "dns":
-            logger.debug(f"DNS lookup for {args.domain} with type {args.type}")
-            result = dns_lookup(args.domain, args.type)
+        try:
+            if args.command == "dns":
+                result = self.run_dns(args)
+            elif args.command == "http":
+                result = self.run_http(args)
+            elif args.command == "ping":
+                result = self.run_ping(args)
+            elif args.command == "traceroute":
+                result = self.run_traceroute(args)
+            elif args.command == "portscan":
+                result = self.run_portscan(args)
+            elif args.command == "sslcert":
+                result = self.run_sslcert(args)
+            elif args.command == "smtprelay":
+                result = self.run_smtp_relay_check(args)
+            else:
+                logger.warning("No valid command provided")
+                self.parser.print_help()
+                return
+
             self.print_result(result)
-        elif args.command == "http":
-            logger.debug(f"HTTP request to {args.url} with method {args.method}")
-            headers = json.loads(args.headers) if args.headers else None
-            json_data = json.loads(args.json) if args.json else None
-            result = http_request(args.url, method=args.method, headers=headers, data=args.data, json_data=json_data)
-            self.print_result(result)
-        elif args.command == "ping":
-            logger.debug(f"Pinging {args.host} with count {args.count}")
-            result = ping(args.host, args.count)
-            self.print_result(result)
-        elif args.command == "traceroute":
-            logger.debug(f"Traceroute to {args.host}")
-            result = traceroute(args.host)
-            self.print_result(result)
-        else:
-            logger.warning("No valid command provided")
-            self.parser.print_help()
+        except Exception as e:
+            logger.error(f"An error occurred: {str(e)}")
+            print(f"Error: {str(e)}")
+
+    def run_dns(self, args):
+        domain = sanitize_input(args.domain)
+        if not validate_domain(domain):
+            return "Error: Invalid domain name"
+        return dns_lookup(domain, args.type)
+
+    def run_http(self, args):
+        url = args.url
+        if not validate_url(url):
+            return "Error: Invalid URL"
+        return http_request(url, method=args.method, headers=args.headers, data=args.data, json_data=args.json)
+
+    def run_ping(self, args):
+        host = sanitize_input(args.host)
+        if not (validate_domain(host) or validate_ip(host)):
+            return "Error: Invalid host"
+        return ping(host, args.count)
+
+    def run_traceroute(self, args):
+        host = sanitize_input(args.host)
+        if not (validate_domain(host) or validate_ip(host)):
+            return "Error: Invalid host"
+        return traceroute(host)
+
+    def run_portscan(self, args):
+        host = sanitize_input(args.host)
+        if not (validate_domain(host) or validate_ip(host)):
+            return "Error: Invalid host"
+        ports = self.parse_ports(args.ports)
+        return port_scan(host, ports)
+
+    def run_sslcert(self, args):
+        hostname = sanitize_input(args.hostname)
+        if not validate_domain(hostname):
+            return "Error: Invalid hostname"
+        return validate_ssl_cert(hostname, args.port)
+
+    def run_smtp_relay_check(self, args):
+        host = sanitize_input(args.host)
+        if not (validate_domain(host) or validate_ip(host)):
+            return "Error: Invalid host"
+        return check_smtp_relay(host, args.port)
+
+    def parse_ports(self, ports_str):
+        ports = []
+        for part in ports_str.split(','):
+            if '-' in part:
+                start, end = map(int, part.split('-'))
+                ports.extend(range(start, end + 1))
+            else:
+                ports.append(int(part))
+        return ports
 
     def print_result(self, result):
-        logger.debug(f"Printing result: {result}")
         if isinstance(result, dict):
             print(json.dumps(result, indent=2))
         elif isinstance(result, list):
